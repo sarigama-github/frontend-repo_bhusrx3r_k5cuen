@@ -1,12 +1,34 @@
+import { useEffect, useState } from 'react';
 import Spline from '@splinetool/react-spline';
 import { Rocket, Play } from 'lucide-react';
 
 export default function Hero() {
+  const [mounted, setMounted] = useState(false);
+  const [splineOk, setSplineOk] = useState(true);
+
+  useEffect(() => {
+    // Ensure Spline only renders on client to avoid any hydration edge-cases
+    setMounted(true);
+  }, []);
+
   return (
     <section className="relative min-h-[70vh] w-full overflow-hidden" id="home">
       <div className="absolute inset-0">
-        {/* 3D Scene */}
-        <Spline scene="https://prod.spline.design/bUmljvJqgWX2QKOM/scene.splinecode" style={{ width: '100%', height: '100%' }} />
+        {mounted && splineOk ? (
+          <Spline
+            scene="https://prod.spline.design/bUmljvJqgWX2QKOM/scene.splinecode"
+            style={{ width: '100%', height: '100%' }}
+            onLoad={() => setSplineOk(true)}
+            onError={() => setSplineOk(false)}
+          />
+        ) : (
+          <img
+            src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=1600&auto=format&fit=crop"
+            alt="Coding backdrop"
+            className="w-full h-full object-cover"
+            loading="eager"
+          />
+        )}
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 flex flex-col md:flex-row items-center gap-10">
@@ -34,8 +56,8 @@ export default function Hero() {
         <div className="w-full md:w-1/2">
           <div className="w-full aspect-video rounded-xl overflow-hidden ring-1 ring-neutral-200 dark:ring-neutral-800 bg-white/60 dark:bg-neutral-900/60 backdrop-blur">
             <img
-              src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=1600&auto=format&fit=crop"
-              alt="Coding"
+              src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=1600&auto=format&fit=crop"
+              alt="Students learning"
               className="w-full h-full object-cover"
               loading="lazy"
             />

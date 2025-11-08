@@ -5,8 +5,13 @@ export default function Navbar() {
   const [theme, setTheme] = useState('light');
 
   useEffect(() => {
-    const saved = localStorage.getItem('theme') || 'light';
-    setTheme(saved);
+    const saved = localStorage.getItem('theme');
+    if (saved) {
+      setTheme(saved);
+      return;
+    }
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setTheme(prefersDark ? 'dark' : 'light');
   }, []);
 
   useEffect(() => {
@@ -39,6 +44,7 @@ export default function Navbar() {
             <Search className="h-4 w-4 text-neutral-500" />
             <input
               aria-label="Search"
+              type="search"
               className="bg-transparent outline-none text-sm w-40 placeholder-neutral-500 text-neutral-800 dark:text-neutral-100"
               placeholder="Search courses, books..."
             />
