@@ -1,72 +1,85 @@
-import React, { useMemo, useState } from 'react';
-import { Play, RotateCcw, Code } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Code, RotateCcw, Play } from 'lucide-react';
 
-const defaultHTML = `<!-- HTML -->\n<div class="wrap">\n  <h1>Jayvik Learn Hub</h1>\n  <p>Write HTML, CSS, and JavaScript — then run it live.</p>\n  <button id="ping">Run JS</button>\n  <div id="out"></div>\n</div>`;
+const defaultHTML = `<!-- Write HTML here -->\n<div class="container">\n  <h1>Hello, Jayvik Learn Hub!</h1>\n  <p>Edit the code and click Run to see changes.</p>\n  <button class="btn">Click me</button>\n</div>`;
 
-const defaultCSS = `/* CSS */\n:root{color-scheme:light dark;}\nbody{font-family:Inter,system-ui,Arial,Helvetica,sans-serif;margin:0;padding:24px;background:radial-gradient(600px circle at 0 0,#7c3aed0a,transparent 40%),radial-gradient(800px circle at 100% 100%,#06b6d40a,transparent 40%);}\n.wrap{max-width:720px;margin-inline:auto;padding:24px;border-radius:16px;background:rgba(255,255,255,.7);backdrop-filter:saturate(1.2) blur(6px);box-shadow:0 10px 30px -10px rgba(2,6,23,.15)}\n@media (prefers-color-scheme: dark){.wrap{background:rgba(24,24,27,.7);}}\n#out{margin-top:10px;padding:12px;border-radius:10px;background:#1118270a}\nbutton{appearance:none;border:0;background:#4f46e5;color:white;padding:8px 14px;border-radius:10px;font-weight:600}`;
+const defaultCSS = `/* Write CSS here */\n* { box-sizing: border-box; }\nbody { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; padding: 20px; background: #0b1020; color: #e8eefc; }\n.container { max-width: 720px; margin: 0 auto; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 24px; }\n.btn { background: #6366f1; border: 0; color: white; padding: 10px 14px; border-radius: 10px; cursor: pointer; }\n.btn:hover { filter: brightness(1.1); }`;
 
-const defaultJS = `// JavaScript\nconst btn = document.getElementById('ping');\nconst out = document.getElementById('out');\nbtn.addEventListener('click', () => {\n  out.textContent = 'Hello from Jayvik Labs! ⚡';\n});`;
+const defaultJS = `// Write JS here\nconst btn = document.querySelector('.btn');\nbtn?.addEventListener('click', () => alert('Hello from the sandbox!'));`;
 
-const Editor = () => {
+function Pane({ title, value, onChange }) {
+  return (
+    <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 overflow-hidden">
+      <div className="px-3 py-2 bg-neutral-100 dark:bg-neutral-800 text-xs font-medium text-neutral-600 dark:text-neutral-300">{title}</div>
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        spellCheck={false}
+        className="w-full h-48 sm:h-56 md:h-64 lg:h-72 p-3 font-mono text-sm bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 outline-none"
+      />
+    </div>
+  );
+}
+
+export default function Editor() {
   const [html, setHtml] = useState(defaultHTML);
   const [css, setCss] = useState(defaultCSS);
   const [js, setJs] = useState(defaultJS);
-  const [key, setKey] = useState(0);
+  const iframeRef = useRef(null);
 
   const srcDoc = useMemo(() => {
-    return `<!doctype html><html><head><meta charset='utf-8'><style>${css}</style></head><body>${html}<script>${js}<\/script></body></html>`;
+    return `<!DOCTYPE html><html><head><meta charset=\"UTF-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><style>${css}</style></head><body>${html}<script>${js}<\\/script></body></html>`;
   }, [html, css, js]);
 
-  const run = () => setKey((k) => k + 1);
-  const reset = () => {
+  useEffect(() => {
+    const iframe = iframeRef.current;
+    if (iframe) {
+      iframe.srcdoc = srcDoc;
+    }
+  }, [srcDoc]);
+
+  const handleReset = () => {
     setHtml(defaultHTML);
     setCss(defaultCSS);
     setJs(defaultJS);
-    setKey((k) => k + 1);
   };
 
   return (
-    <section id="editor" className="py-16">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex items-end justify-between">
+    <section id="editor" className="py-14 sm:py-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-end justify-between gap-4 mb-6">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-zinc-100">Built-in Code Editor</h2>
-            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">Write HTML, CSS, and JavaScript. Run it live in the browser. Python support coming soon.</p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white">Playground Editor</h2>
+            <p className="text-neutral-600 dark:text-neutral-400 mt-1">Write HTML, CSS, and JavaScript. Preview updates instantly.</p>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={run} className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 text-white px-4 py-2 text-sm font-medium shadow-md hover:bg-indigo-500 transition"><Play size={16} />Run</button>
-            <button onClick={reset} className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-zinc-900 ring-1 ring-zinc-200/70 dark:ring-zinc-800 text-zinc-900 dark:text-zinc-100 px-4 py-2 text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition"><RotateCcw size={16} />Reset</button>
+            <button onClick={handleReset} className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 dark:border-neutral-700 px-3 py-2 text-sm">
+              <RotateCcw className="h-4 w-4" /> Reset
+            </button>
           </div>
         </div>
 
-        <div className="mt-6 grid lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="space-y-4">
-            <div className="rounded-2xl overflow-hidden ring-1 ring-zinc-200/70 dark:ring-zinc-800">
-              <div className="flex items-center justify-between bg-zinc-50 dark:bg-zinc-900/60 px-4 py-2 text-xs text-zinc-600 dark:text-zinc-300"><span className="inline-flex items-center gap-2"><Code size={14} />HTML</span></div>
-              <textarea value={html} onChange={(e) => setHtml(e.target.value)} className="w-full h-40 p-4 bg-white dark:bg-zinc-900 text-sm text-zinc-800 dark:text-zinc-100 outline-none" />
-            </div>
-            <div className="rounded-2xl overflow-hidden ring-1 ring-zinc-200/70 dark:ring-zinc-800">
-              <div className="flex items-center justify-between bg-zinc-50 dark:bg-zinc-900/60 px-4 py-2 text-xs text-zinc-600 dark:text-zinc-300"><span className="inline-flex items-center gap-2"><Code size={14} />CSS</span></div>
-              <textarea value={css} onChange={(e) => setCss(e.target.value)} className="w-full h-40 p-4 bg-white dark:bg-zinc-900 text-sm text-zinc-800 dark:text-zinc-100 outline-none" />
-            </div>
-            <div className="rounded-2xl overflow-hidden ring-1 ring-zinc-200/70 dark:ring-zinc-800">
-              <div className="flex items-center justify-between bg-zinc-50 dark:bg-zinc-900/60 px-4 py-2 text-xs text-zinc-600 dark:text-zinc-300"><span className="inline-flex items-center gap-2"><Code size={14} />JavaScript</span></div>
-              <textarea value={js} onChange={(e) => setJs(e.target.value)} className="w-full h-40 p-4 bg-white dark:bg-zinc-900 text-sm text-zinc-800 dark:text-zinc-100 outline-none" />
-            </div>
+            <Pane title="HTML" value={html} onChange={setHtml} />
+            <Pane title="CSS" value={css} onChange={setCss} />
+            <Pane title="JavaScript" value={js} onChange={setJs} />
           </div>
 
-          <div className="rounded-2xl ring-1 ring-zinc-200/70 dark:ring-zinc-800 overflow-hidden bg-white dark:bg-zinc-900">
-            <div className="flex items-center justify-between bg-zinc-50 dark:bg-zinc-900/60 px-4 py-2 text-xs text-zinc-600 dark:text-zinc-300"><span>Preview</span><span className="text-[11px]">Sandboxed</span></div>
-            <iframe key={key} title="Preview" className="w-full h-[600px]" sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-presentation allow-same-origin allow-scripts" srcDoc={srcDoc} />
+          <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 overflow-hidden bg-white dark:bg-neutral-900">
+            <div className="px-3 py-2 bg-neutral-100 dark:bg-neutral-800 text-xs font-medium text-neutral-600 dark:text-neutral-300 flex items-center justify-between">
+              <span className="inline-flex items-center gap-2"><Code className="h-4 w-4" /> Preview</span>
+              <span className="text-neutral-500">Sandboxed Iframe</span>
+            </div>
+            <iframe
+              ref={iframeRef}
+              title="preview"
+              sandbox="allow-scripts"
+              className="w-full h-[480px] bg-white"
+            />
           </div>
-        </div>
-
-        <div className="mt-6 rounded-2xl ring-1 ring-zinc-200/70 dark:ring-zinc-800 p-4 bg-white dark:bg-zinc-900">
-          <p className="text-sm text-zinc-700 dark:text-zinc-300">Python execution will be enabled via a backend runtime or Pyodide in a future update.</p>
         </div>
       </div>
     </section>
   );
-};
-
-export default Editor;
+}

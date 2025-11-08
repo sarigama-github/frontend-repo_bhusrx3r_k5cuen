@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { Rocket, ShoppingCart, User, Sun, Moon, Search } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Search, ShoppingCart, User, Sun, Moon } from 'lucide-react';
 
-const ThemeToggle = () => {
-  const [theme, setTheme] = useState(() => {
-    if (typeof window === 'undefined') return 'light';
-    return localStorage.getItem('theme') || 'light';
-  });
+export default function Navbar() {
+  const [theme, setTheme] = useState('light');
+
+  useEffect(() => {
+    const saved = localStorage.getItem('theme') || 'light';
+    setTheme(saved);
+  }, []);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -18,63 +20,49 @@ const ThemeToggle = () => {
   }, [theme]);
 
   return (
-    <button
-      aria-label="Toggle theme"
-      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="inline-flex items-center gap-2 rounded-full border border-zinc-300/50 dark:border-zinc-700/60 px-3 py-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
-    >
-      {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-      <span className="hidden sm:inline">{theme === 'dark' ? 'Light' : 'Dark'} Mode</span>
-    </button>
-  );
-};
+    <header className="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/60 bg-white/70 dark:bg-neutral-900/70 border-b border-neutral-200 dark:border-neutral-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-4">
+        <a href="#" className="flex items-center gap-2 font-semibold text-neutral-900 dark:text-white">
+          <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-tr from-indigo-500 to-violet-500 text-white">JL</span>
+          <span className="hidden sm:block">Jayvik Learn Hub</span>
+        </a>
 
-const Navbar = () => {
-  return (
-    <header className="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:supports-[backdrop-filter]:bg-zinc-900/60 border-b border-zinc-200/70 dark:border-zinc-800">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-500 via-violet-500 to-fuchsia-500 text-white shadow-lg">
-              <Rocket size={18} />
-            </span>
-            <div>
-              <p className="text-base font-semibold text-zinc-900 dark:text-white leading-none">Jayvik Learn Hub</p>
-              <p className="text-[11px] text-zinc-600 dark:text-zinc-400 leading-none">Powered by Jayvik Labs</p>
-            </div>
+        <nav className="ml-2 hidden md:flex items-center gap-6 text-sm text-neutral-600 dark:text-neutral-300">
+          <a className="hover:text-neutral-900 dark:hover:text-white" href="#courses">Courses</a>
+          <a className="hover:text-neutral-900 dark:hover:text-white" href="#books">Books</a>
+          <a className="hover:text-neutral-900 dark:hover:text-white" href="#editor">Editor</a>
+          <a className="hover:text-neutral-900 dark:hover:text-white" href="#about">About</a>
+        </nav>
+
+        <div className="ml-auto flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-2 rounded-xl bg-neutral-100 dark:bg-neutral-800 px-3 py-2 border border-neutral-200 dark:border-neutral-700">
+            <Search className="h-4 w-4 text-neutral-500" />
+            <input
+              aria-label="Search"
+              className="bg-transparent outline-none text-sm w-40 placeholder-neutral-500 text-neutral-800 dark:text-neutral-100"
+              placeholder="Search courses, books..."
+            />
           </div>
 
-          <nav className="hidden md:flex items-center gap-6 text-sm">
-            <a className="text-zinc-700 dark:text-zinc-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition" href="#home">Home</a>
-            <a className="text-zinc-700 dark:text-zinc-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition" href="#courses">Courses</a>
-            <a className="text-zinc-700 dark:text-zinc-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition" href="#books">Books</a>
-            <a className="text-zinc-700 dark:text-zinc-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition" href="#challenges">Challenges</a>
-            <a className="text-zinc-700 dark:text-zinc-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition" href="#editor">Code Editor</a>
-            <a className="text-zinc-700 dark:text-zinc-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition" href="#about">About</a>
-          </nav>
+          <button
+            className="inline-flex items-center justify-center h-9 w-9 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900"
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            aria-label="Toggle theme"
+          >
+            {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          </button>
 
-          <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-2 rounded-full border border-zinc-300/60 dark:border-zinc-700/60 px-3 py-1.5">
-              <Search size={16} className="text-zinc-500" />
-              <input
-                className="w-40 bg-transparent text-sm outline-none placeholder:text-zinc-400 text-zinc-800 dark:text-zinc-200"
-                placeholder="Search..."
-              />
-            </div>
-            <ThemeToggle />
-            <button className="relative inline-flex items-center justify-center h-10 w-10 rounded-full border border-zinc-300/60 dark:border-zinc-700/60 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
-              <ShoppingCart size={18} />
-              <span className="absolute -top-1 -right-1 h-5 min-w-[20px] px-1 rounded-full bg-indigo-600 text-white text-[10px] flex items-center justify-center">2</span>
-            </button>
-            <button className="inline-flex items-center gap-2 rounded-full bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 px-4 py-2 text-sm font-medium hover:opacity-90 transition">
-              <User size={16} />
-              <span>Login</span>
-            </button>
-          </div>
+          <button className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm">
+            <ShoppingCart className="h-4 w-4" />
+            <span className="hidden sm:inline">Cart</span>
+          </button>
+
+          <button className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm">
+            <User className="h-4 w-4" />
+            <span className="hidden sm:inline">Login</span>
+          </button>
         </div>
       </div>
     </header>
   );
-};
-
-export default Navbar;
+}

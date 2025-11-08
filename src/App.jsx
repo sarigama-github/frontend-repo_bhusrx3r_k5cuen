@@ -1,13 +1,12 @@
-import React from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Showcase from './components/Showcase';
 import Editor from './components/Editor';
 import Footer from './components/Footer';
 
-const App = () => {
+function App() {
   return (
-    <div className="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50">
+    <div className="min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-50">
       <Navbar />
       <main>
         <Hero />
@@ -17,6 +16,6 @@ const App = () => {
       <Footer />
     </div>
   );
-};
+}
 
 export default App;
