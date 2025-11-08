@@ -1,33 +1,60 @@
 import { useEffect, useState } from 'react';
 import Spline from '@splinetool/react-spline';
 import { Rocket, Play } from 'lucide-react';
+import React from 'react';
+
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error, info) {
+    // Optionally log error to a service
+    // console.error('Spline render error:', error, info);
+  }
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
+}
 
 export default function Hero() {
   const [mounted, setMounted] = useState(false);
   const [splineOk, setSplineOk] = useState(true);
 
   useEffect(() => {
-    // Ensure Spline only renders on client to avoid any hydration edge-cases
+    // Ensure Spline only renders on client to avoid hydration edge-cases
     setMounted(true);
   }, []);
+
+  const fallbackImg = (
+    <img
+      src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=1600&auto=format&fit=crop"
+      alt="Coding backdrop"
+      className="w-full h-full object-cover"
+      loading="eager"
+    />
+  );
 
   return (
     <section className="relative min-h-[70vh] w-full overflow-hidden" id="home">
       <div className="absolute inset-0">
         {mounted && splineOk ? (
-          <Spline
-            scene="https://prod.spline.design/bUmljvJqgWX2QKOM/scene.splinecode"
-            style={{ width: '100%', height: '100%' }}
-            onLoad={() => setSplineOk(true)}
-            onError={() => setSplineOk(false)}
-          />
+          <ErrorBoundary fallback={fallbackImg}>
+            <Spline
+              scene="https://prod.spline.design/EF7JOSsHLk16Tlw9/scene.splinecode"
+              style={{ width: '100%', height: '100%' }}
+              onLoad={() => setSplineOk(true)}
+              onError={() => setSplineOk(false)}
+            />
+          </ErrorBoundary>
         ) : (
-          <img
-            src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=1600&auto=format&fit=crop"
-            alt="Coding backdrop"
-            className="w-full h-full object-cover"
-            loading="eager"
-          />
+          fallbackImg
         )}
       </div>
 
